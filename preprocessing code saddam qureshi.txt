@@ -1,0 +1,32 @@
+import pandas as pd
+
+df = pd.read_excel("Book1.xlsx")
+
+df = df.drop_duplicates()
+
+df.columns = (
+    df.columns
+    .str.strip()
+    .str.lower()
+    .str.replace(" ", "_")
+)
+
+for col in df.select_dtypes(include="object").columns:
+    df[col] = df[col].str.strip()
+
+df = df.dropna(how="all")
+
+if "age_group" in df.columns:
+    df["age_group"] = (
+        df["age_group"]
+        .astype(str)
+        .str.replace("ÛÒ", "-", regex=False)
+        .str.replace("–", "-", regex=False)
+    )
+
+if "alcohol_intake" in df.columns:
+    df["alcohol_intake"] = df["alcohol_intake"].fillna(
+        df["alcohol_intake"].mode()[0]
+    )
+
+df.to_csv("heart_disease_clean_for_powerbi.csv", index=False)
