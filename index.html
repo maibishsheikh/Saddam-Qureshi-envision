@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Heart Disease Risk Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #d62828;
+            --primary-dark: #b71c1c;
+            --secondary: #003049;
+            --accent: #2a9d8f;
+            --light: #f4f6f8;
+            --dark: #2d3748;
+            --success: #38b000;
+            --warning: #ff9505;
+            --danger: #e63946;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            top: -150px;
+            right: -100px;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            bottom: -100px;
+            left: -50px;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .heart-icon {
+            font-size: 2.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            animation: heartbeat 1.5s ease infinite;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: -2rem auto 3rem;
+            padding: 0 1.5rem;
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Form Card */
+        .form-card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            transform: translateY(0);
+            transition: var(--transition);
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-card h2 {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .form-card h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: #f8fafc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+        }
+
+        .form-icon {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            color: var(--secondary);
+            opacity: 0.6;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, var(--secondary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(214, 40, 40, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(214, 40, 40, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn i {
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Result Card */
+        .result-card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .result-content {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .risk-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: var(--transition);
+        }
+
+        .risk-icon.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .risk-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .risk-description {
+            font-size: 1rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .risk-high {
+            color: var(--danger);
+        }
+
+        .risk-low {
+            color: var(--success);
+        }
+
+        /* Health Tips */
+        .health-tips {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .health-tips h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .tips-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .tip-item i {
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--secondary);
+            color: white;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            5% { transform: scale(1.1); }
+            10% { transform: scale(1); }
+            15% { transform: scale(1.1); }
+            20% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(42, 157, 143, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(42, 157, 143, 0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 0;
+            }
+            
+            .form-card, .result-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .risk-icon {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-content">
+            <div class="heart-icon">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <h1>AI-Powered Heart Disease Risk Prediction</h1>
+            <p>Early detection for preventive healthcare. Our advanced algorithm analyzes your health metrics to assess heart disease risk.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Form Section -->
+        <section class="form-card">
+            <h2>Patient Health Information</h2>
+            <form id="riskForm">
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" class="form-control" min="18" max="100" required>
+                    <i class="fas fa-user form-icon"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="bp">Blood Pressure (mmHg)</label>
+                    <input type="number" id="bp" class="form-control" min="80" max="200" required>
+                    <i class="fas fa-tachometer-alt form-icon"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="cholesterol">Cholesterol Level (mg/dL)</label>
+                    <input type="number" id="cholesterol" class="form-control" min="100" max="400" required>
+                    <i class="fas fa-vial form-icon"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="bmi">Body Mass Index (BMI)</label>
+                    <input type="number" step="0.1" id="bmi" class="form-control" min="15" max="50" required>
+                    <i class="fas fa-weight form-icon"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="smoking">Smoking Status</label>
+                    <select id="smoking" class="form-control">
+                        <option value="1">Smoker</option>
+                        <option value="0" selected>Non-Smoker</option>
+                    </select>
+                    <i class="fas fa-smoking form-icon"></i>
+                </div>
+
+                <div class="form-group">
+                    <label for="activity">Physical Activity</label>
+                    <select id="activity" class="form-control">
+                        <option value="1" selected>Physically Active</option>
+                        <option value="0">Physically Inactive</option>
+                    </select>
+                    <i class="fas fa-running form-icon"></i>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Predict Heart Disease Risk</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- Result Section -->
+        <section class="result-card">
+            <div class="result-content">
+                <div class="risk-icon" id="riskIcon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                
+                <h2 class="risk-title" id="riskTitle">Awaiting Analysis</h2>
+                
+                <p class="risk-description" id="riskDescription">
+                    Submit your health information to receive a personalized heart disease risk assessment.
+                </p>
+                
+                <div class="health-tips">
+                    <h3>Heart Health Tips</h3>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <i class="fas fa-apple-alt"></i>
+                            <span>Eat a balanced diet rich in fruits and vegetables</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-running"></i>
+                            <span>Engage in at least 30 minutes of exercise daily</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-ban-smoking"></i>
+                            <span>Avoid smoking and limit alcohol consumption</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-weight"></i>
+                            <span>Maintain a healthy body weight</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 | AI-Powered Healthcare Analytics Project</p>
+        <p>This tool provides risk assessment only and is not a substitute for professional medical advice.</p>
+        <div class="footer-links">
+            <a href="#"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+            <a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a>
+            <a href="#"><i class="fas fa-envelope"></i> Contact Us</a>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('riskForm');
+            const riskIcon = document.getElementById('riskIcon');
+            const riskTitle = document.getElementById('riskTitle');
+            const riskDescription = document.getElementById('riskDescription');
+            
+            // Add focus effects to form inputs
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+            
+            // Form submission handler
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                const submitBtn = form.querySelector('.submit-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                submitBtn.disabled = true;
+                
+                // Get form data
+                const data = {
+                    age: document.getElementById('age').value,
+                    bp: document.getElementById('bp').value,
+                    cholesterol: document.getElementById('cholesterol').value,
+                    bmi: document.getElementById('bmi').value,
+                    smoking: document.getElementById('smoking').value,
+                    activity: document.getElementById('activity').value
+                };
+                
+                // Simulate API call with mock response (for demo purposes)
+                // In a real implementation, this would be a fetch call to your backend
+                setTimeout(() => {
+                    // Mock prediction based on inputs
+                    const risk = mockPredictRisk(data);
+                    
+                    // Display result
+                    displayResult(risk);
+                    
+                    // Reset button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 1500);
+                
+                // Real API call (commented out for demo)
+                /*
+                try {
+                    const response = await fetch("http://127.0.0.1:5000/predict", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    displayResult(result.risk);
+                } catch (error) {
+                    riskIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                    riskIcon.className = 'risk-icon show risk-high';
+                    riskTitle.textContent = "Connection Error";
+                    riskTitle.className = "risk-title risk-high";
+                    riskDescription.textContent = "Unable to connect to the prediction service. Please check your connection and try again.";
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+                */
+            });
+            
+            // Mock prediction function for demo
+            function mockPredictRisk(data) {
+                // Simple mock logic based on input values
+                let score = 0;
+                
+                // Age factor
+                if (data.age > 50) score += 1;
+                if (data.age > 65) score += 1;
+                
+                // Blood pressure factor
+                if (data.bp > 140) score += 1;
+                if (data.bp > 160) score += 1;
+                
+                // Cholesterol factor
+                if (data.cholesterol > 200) score += 1;
+                if (data.cholesterol > 240) score += 1;
+                
+                // BMI factor
+                if (data.bmi > 25) score += 1;
+                if (data.bmi > 30) score += 1;
+                
+                // Smoking factor
+                if (parseInt(data.smoking) === 1) score += 2;
+                
+                // Activity factor
+                if (parseInt(data.activity) === 0) score += 1;
+                
+                // Return 1 for high risk, 0 for low risk
+                return score >= 4 ? 1 : 0;
+            }
+            
+            // Display result function
+            function displayResult(risk) {
+                // Reset animation
+                riskIcon.classList.remove('show');
+                
+                // Small delay to allow reset
+                setTimeout(() => {
+                    if (risk === 1) {
+                        // High risk
+                        riskIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                        riskIcon.className = 'risk-icon show risk-high';
+                        riskTitle.textContent = "⚠️ High Risk Detected";
+                        riskTitle.className = "risk-title risk-high";
+                        riskDescription.textContent = "Our analysis indicates an elevated risk of heart disease. We recommend consulting with a healthcare professional for a comprehensive evaluation and personalized advice.";
+                        
+                        // Add shake animation for high risk
+                        riskIcon.style.animation = 'shake 0.8s ease';
+                        setTimeout(() => {
+                            riskIcon.style.animation = '';
+                        }, 800);
+                    } else {
+                        // Low risk
+                        riskIcon.innerHTML = '<i class="fas fa-heart"></i>';
+                        riskIcon.className = 'risk-icon show risk-low';
+                        riskTitle.textContent = "✅ Low Risk";
+                        riskTitle.className = "risk-title risk-low";
+                        riskDescription.textContent = "Our analysis indicates a low risk of heart disease. Continue maintaining a healthy lifestyle with regular exercise and balanced nutrition.";
+                        
+                        // Add pulse animation for low risk
+                        riskIcon.style.animation = 'pulse 2s infinite';
+                    }
+                }, 300);
+            }
+            
+            // Pre-fill form with sample data for demo
+            function fillSampleData() {
+                document.getElementById('age').value = 45;
+                document.getElementById('bp').value = 130;
+                document.getElementById('cholesterol').value = 210;
+                document.getElementById('bmi').value = 24.5;
+                document.getElementById('smoking').value = 0;
+                document.getElementById('activity').value = 1;
+            }
+            
+            // Uncomment to pre-fill with sample data
+            // fillSampleData();
+        });
+    </script>
+</body>
+</html>
